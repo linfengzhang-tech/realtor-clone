@@ -7,6 +7,7 @@ const Header = () => {
 
   const isActive = (path) => pathname === path;
 
+
   return (
     <div className="bg-white shadow-sm border-b sticky top-0 z-50">
       <header className="flex justify-between items-center px-3 max-w-6xl mx-auto">
@@ -16,13 +17,13 @@ const Header = () => {
 
         <div>
             <ul className="flex items-center space-x-10">
-                <li className={`py-3 border-b-[3px] border-b-transparent text-sm text-gray-600 hover:text-red-500 transition duration-300 ${isActive('/') ? 'text-black border-b-red-500 pointer-events-none' : 'text-gray-500'}`}>
+                <li className={`py-3 border-b-[3px] text-sm text-gray-600 hover:text-red-500 transition duration-300 ${isActive('/') ? 'text-black border-b-red-500 pointer-events-none' : 'text-gray-500 border-b-transparent'}`}>
                     <Link to="/">Home</Link>
                 </li>
-                <li className={`py-3 border-b-[3px] border-b-transparent text-sm text-gray-600 hover:text-red-500 transition duration-300 ${isActive('/offers') ? 'text-black border-b-red-500 pointer-events-none' : 'text-gray-500'}`}>
+              <li className={`py-3 border-b-[3px] text-sm hover:text-red-500 transition duration-300 ${isActive('/offers') ? 'text-black border-b-red-500 pointer-events-none' : 'text-gray-500 border-b-transparent'}`}>
                     <Link to="/offers">Offers</Link>
                 </li>
-                <li className={`py-3 border-b-[3px] border-b-transparent text-sm text-gray-600 hover:text-red-500 transition duration-300 ${isActive('/sign-in') ? 'text-black border-b-red-500 pointer-events-none' : 'text-gray-500'}`}>
+                <li className={`py-3 border-b-[3px] text-sm  hover:text-red-500 transition duration-300 ${isActive('/sign-in') ? 'text-black border-b-red-500 pointer-events-none' : 'text-gray-500 border-b-transparent'}`}>
                     <Link to="/sign-in">Sign in</Link>
                 </li>
             </ul>
