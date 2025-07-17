@@ -2,8 +2,12 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import Oauth from "../components/Oauth";
+import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const Signin = () => {
+  const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     email: '',
@@ -18,6 +22,23 @@ const Signin = () => {
     setFormData({ ...formData, [e.target.id]: e.target.value });
   };
 
+  const onSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const auth = getAuth();
+      const userCredential = await signInWithEmailAndPassword(auth, formData.email, formData.password);
+      const user = userCredential.user;
+      if (user) {
+        toast.success("Signed in successfully");
+        navigate("/");
+      } else {
+        toast.error("Invalid user credentials");
+      }
+    } catch (error) {
+      toast.error("Invalid user credentials");
+    }
+  };
+
   return (
     <section>
         <h1 className="text-3xl text-center mt-6 font-bold">Sign in</h1>
@@ -27,7 +48,7 @@ const Signin = () => {
                 <img src="/realtor.webp" alt="Signin" className="w-full rounded-2xl shadow-lg"/>
             </div>
             <div className="w-full md:w-[67%] lg:w-[40%] lg:ml-20">
-                <form className="space-y-6">
+                <form className="space-y-6" onSubmit={onSubmit}>
                     <div>
                         <label htmlFor="email" className="block text-sm font-medium text-gray-700">Email</label>
                         <input type="email" id="email" placeholder="Email" className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" value={formData.email} onChange={handleChange} />
