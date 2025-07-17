@@ -1,8 +1,14 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import Oauth from "../components/Oauth";
+import { getAuth, createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
+import { db } from "../firebase";
+import { setDoc, doc, serverTimestamp } from "firebase/firestore"; 
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const Signup = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -18,9 +24,29 @@ const Signup = () => {
     }));
   };
 
-  const onSubmit = (e) => {
+  const onSubmit = async (e) => {
     e.preventDefault();
-    // Handle sign up logic here
+    try {
+      const auth = getAuth();
+      await createUserWithEmailAndPassword(auth, email, password)
+      .then((userCredential) => {
+        const user = userCredential.user;
+        updateProfile(user, { displayName: name });
+        const formDataCopy = { ...formData, timestamp: serverTimestamp() };
+        delete formDataCopy.password;
+        setDoc(doc(db, "users", user.uid), formDataCopy);
+        toast.success("Registration successful");
+        navigate("/");
+      })
+    } catch (error) {
+      const errorCode = error.code;
+      const errorMessage = error.message;
+      if (errorCode === "auth/email-already-in-use") {
+        toast.error("This email is already in use. Please try another one.");
+      } else {
+        toast.error("Failed to register: " + errorMessage);
+      }
+    }
   };
 
   return (
@@ -77,11 +103,12 @@ const Signup = () => {
             >
               Sign Up
             </button>
+            </form>
+
             <div className="flex items-center my-4 before:border-t before:flex-1 before:border-gray-300 after:border-t after:flex-1 after:border-gray-300">
               <p className="text-center font-semibold mx-4">OR</p>
             </div>
             <Oauth />
-          </form>
         </div>
       </div>
     </section>
