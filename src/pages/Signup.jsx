@@ -28,23 +28,26 @@ const Signup = () => {
     e.preventDefault();
     try {
       const auth = getAuth();
-      await createUserWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        const user = userCredential.user;
-        updateProfile(user, { displayName: name });
-        const formDataCopy = { ...formData, timestamp: serverTimestamp() };
-        delete formDataCopy.password;
-        setDoc(doc(db, "users", user.uid), formDataCopy);
-        toast.success("Registration successful");
-        navigate("/");
-      })
-    } catch (error) {
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        formData.email,
+        formData.password
+      );
+      await updateProfile(userCredential.user, { displayName: name });
+      await setDoc(doc(db, "users", userCredential.user.uid), {
+        name: formData.name,
+        email: formData.email,
+        timestamp: serverTimestamp(),
+      });
+      toast.success("Registration successful");
+      navigate("/");
+      } catch (error) {
       const errorCode = error.code;
       const errorMessage = error.message;
-      if (errorCode === "auth/email-already-in-use") {
-        toast.error("This email is already in use. Please try another one.");
-      } else {
-        toast.error("Failed to register: " + errorMessage);
+        if (errorCode === "auth/email-already-in-use") {
+          toast.error("This email is already in use. Please try another one.");
+        } else {
+          toast.error("Failed to register: " + errorMessage);
       }
     }
   };
@@ -103,12 +106,11 @@ const Signup = () => {
             >
               Sign Up
             </button>
-            </form>
-
             <div className="flex items-center my-4 before:border-t before:flex-1 before:border-gray-300 after:border-t after:flex-1 after:border-gray-300">
               <p className="text-center font-semibold mx-4">OR</p>
             </div>
             <Oauth />
+          </form>
         </div>
       </div>
     </section>
