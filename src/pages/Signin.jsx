@@ -62,7 +62,7 @@ const Signin = () => {
                     </div>
                     <div className="flex items-center justify-between mt-4">
                         <p className="text-sm text-gray-600">
-                          <Link to="/forget-password" className="text-indigo-600 hover:text-indigo-800 transition duration-150 ease-in-out">Forgot password?</Link>
+                          <Link to="/forgot-password" className="text-indigo-600 hover:text-indigo-800 transition duration-150 ease-in-out">Forgot password?</Link>
                         </p>
                         <p className="text-sm text-gray-600">Don't have an account? <Link to="/sign-up" className="text-indigo-600 hover:text-indigo-800 transition duration-150 ease-in-out">Register</Link></p>
                     </div>
