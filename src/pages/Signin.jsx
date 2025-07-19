@@ -30,7 +30,7 @@ const Signin = () => {
       const user = userCredential.user;
       if (user) {
         toast.success("Signed in successfully");
-        navigate("/");
+        navigate("/profile");
       } else {
         toast.error("Invalid user credentials");
       }

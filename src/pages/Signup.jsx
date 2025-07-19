@@ -40,7 +40,7 @@ const Signup = () => {
         timestamp: serverTimestamp(),
       });
       toast.success("Registration successful");
-      navigate("/");
+      navigate("/profile");
       } catch (error) {
       const errorCode = error.code;
       const errorMessage = error.message;

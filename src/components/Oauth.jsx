@@ -24,7 +24,7 @@ const Oauth = () => {
           });
         }
         toast.success("Signed in with Google");
-        navigate("/");
+        navigate("/profile");
       })
       .catch((error) => {
         toast.error("Error during sign-in: " + error.message);
