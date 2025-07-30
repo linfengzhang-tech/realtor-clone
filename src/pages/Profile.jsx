@@ -1,7 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { getAuth, signOut } from "firebase/auth";
 import {FcHome} from "react-icons/fc";
+import { collection, query, where, getDocs, deleteDoc, doc, orderBy } from "firebase/firestore";
+import { db } from "../firebase";
+import ListingItem from "../components/ListingItem";
 
 const Profile = () => {
   const navigate = useNavigate(); 
@@ -12,7 +15,8 @@ const Profile = () => {
   });
 
   const [editMode, setEditMode] = useState(false);
-
+  const [listings, setListings] = useState([]);
+  const [loading, setLoading] = useState(true);
   const { name, email } = formData;
 
   const handleChange = (e) => {
@@ -30,7 +34,41 @@ const Profile = () => {
     });
   };
 
+  useEffect(() => {
+    async function fetchUserListings() {
+      const listingRef = collection(db, "listings");
+      const q = query(
+        listingRef,
+        where("userRef", "==", auth.currentUser.uid),
+        orderBy("timestamp", "desc")
+      );
+      const querySnap = await getDocs(q);
+      let listings = [];
+      querySnap.forEach((doc) => {
+        return listings.push({
+          id: doc.id,
+          data: doc.data(),
+        });
+      });
+      setListings(listings);
+      setLoading(false);
+    }
+    fetchUserListings();
+  }, [auth.currentUser.uid]);
+
+  const onDelete = (listingId) => {
+    if (window.confirm("Are you sure you want to delete this listing?")) {
+      const docRef = doc(db, "listings", listingId);
+      deleteDoc(docRef);
+    }
+  };
+
+  const onEdit = (listingId) => {
+    navigate(`/edit-listing/${listingId}`);
+  };
+
   return (
+    <>
       <section className="max-w-6xl mx-auto px-3">
         <h1 className="text-3xl font-semibold text-center mt-6">My Profile</h1>
         <div className="flex justify-center items-center mt-6 flex-col">
@@ -79,6 +117,28 @@ const Profile = () => {
           </div>
         </div>
       </section>
+
+      <div className="max-w-6xl px-3 mt-6 mx-auto">
+      {!loading && listings.length > 0 && (
+        <>
+          <h2 className="text-2xl text-center font-semibold mb-6">
+            My Listings
+          </h2>
+          <ul className="sm:grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
+            {listings.map((listing) => (
+              <ListingItem
+                key={listing.id}
+                id={listing.id}
+                listing={listing.data}
+                onDelete={() => onDelete(listing.id)}
+                onEdit={() => onEdit(listing.id)}
+              />
+            ))}
+          </ul>
+        </>
+      )}
+    </div>
+    </>
   );
 };
 
